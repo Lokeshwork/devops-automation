@@ -1,39 +1,47 @@
 pipeline {
-    agent any
-    tools{
-        maven 'maven_3_5_0'
-    }
-    stages{
-        stage('Build Maven'){
-            steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Java-Techie-jt/devops-automation']]])
-                sh 'mvn clean install'
-            }
-        }
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker build -t javatechie/devops-integration .'
-                }
-            }
-        }
-        stage('Push image to Hub'){
-            steps{
-                script{
-                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                   sh 'docker login -u javatechie -p ${dockerhubpwd}'
 
+agent none
+
+environment {     
+    DOCKERHUB_CREDENTIALS= credentials('dockerhub-jenkins')
+    DOCKER_USERNAME='lokeshjwork'
+    IMAGE_TAG='kube-deploy'
+    IMAGE_NAME='devops-integration'
+    YAML_FILE='deploymentservice.yaml'
 }
-                   sh 'docker push javatechie/devops-integration'
-                }
-            }
-        }
-        stage('Deploy to k8s'){
-            steps{
-                script{
-                    kubernetesDeploy (configs: 'deploymentservice.yaml',kubeconfigId: 'k8sconfigpwd')
-                }
-            }
-        }
+
+stages {
+  stage('Git checkout') {	agent {label 'Docker'}
+    steps {
+      git branch: 'main', url: 'https://github.com/Lokeshwork/devops-automation.git'
     }
+  }
+
+  stage('build') {	agent {label 'Docker'}
+    steps {
+      sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . '
+    }
+  }
+
+  
+stage('Login to Dockerhub') {	agent {label 'Docker'}
+    steps {
+      sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW> --password-stdin'
+    }
+  }
+
+  stage('Pushing Image to dockerhub') {	agent {label 'Docker'}
+    steps {
+      sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}'
+      sh 'docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}'
+      sh 'docker logout'
+    }
+  }
+
+  stage('deploying on kubernetes') {	agent {label 'Kubernetes'}
+    steps {
+      sh 'kubectl apply -f ${YAML_FILE}'
+    }
+  }
+}
 }
