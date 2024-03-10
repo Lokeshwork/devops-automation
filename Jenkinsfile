@@ -5,7 +5,6 @@ agent none
 environment {     
     DOCKERHUB_CREDENTIALS= credentials('dockerhub-jenkins')
     DOCKER_USERNAME='lokeshjwork'
-    IMAGE_TAG='kube-deploy'
     IMAGE_NAME='devops-integration'
     YAML_FILE='deploymentservice.yaml'
 }
@@ -32,8 +31,8 @@ stage('Login to Dockerhub') {	agent {label 'agent3'}
 
   stage('Pushing Image to dockerhub') {	agent {label 'agent3'}
     steps {
-      sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}'
-      sh 'docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}'
+      sh 'docker tag ${IMAGE_NAME}:latest ${DOCKER_USERNAME}/${IMAGE_NAME}:latest'
+      sh 'docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:latest'
       sh 'docker logout'
     }
   }
