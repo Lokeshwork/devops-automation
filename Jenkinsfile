@@ -37,7 +37,7 @@ stage('Login to Dockerhub') {	agent {label 'agent3'}
     }
   }
 
-  stage('deploying on kubernetes') {	agent {label 'Kubernetes'}
+  stage('deploying on kubernetes') {	agent {label 'kubernetes'}
     steps {
       sh 'kubectl apply -f ${YAML_FILE}'
     }
