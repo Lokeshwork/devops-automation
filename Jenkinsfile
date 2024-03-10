@@ -11,26 +11,26 @@ environment {
 }
 
 stages {
-  stage('Git checkout') {	agent {label 'Docker'}
+  stage('Git checkout') {	agent {label 'agent3'}
     steps {
       git branch: 'main', url: 'https://github.com/Lokeshwork/devops-automation.git'
     }
   }
 
-  stage('build') {	agent {label 'Docker'}
+  stage('build') {	agent {label 'agent3'}
     steps {
       sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . '
     }
   }
 
   
-stage('Login to Dockerhub') {	agent {label 'Docker'}
+stage('Login to Dockerhub') {	agent {label 'agent3'}
     steps {
       sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW> --password-stdin'
     }
   }
 
-  stage('Pushing Image to dockerhub') {	agent {label 'Docker'}
+  stage('Pushing Image to dockerhub') {	agent {label 'agent3'}
     steps {
       sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}'
       sh 'docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}'
