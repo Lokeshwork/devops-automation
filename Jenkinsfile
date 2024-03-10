@@ -3,7 +3,7 @@ pipeline {
 agent none
 
 environment {     
-    DOCKERHUB_CREDENTIALS= credentials('dockerhub-jenkins')
+    DOCKERHUB_CREDENTIALS= credentials('dockerhub-jenkins-agent3')
     DOCKER_USERNAME='lokeshjwork'
     IMAGE_NAME='devops-integration'
     IMAGE_TAG='kube-deploy'
