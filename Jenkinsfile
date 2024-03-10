@@ -19,7 +19,7 @@ stages {
 
   stage('build') {	agent {label 'agent3'}
     steps {
-      sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . '
+      sh 'docker build -t $DOCKER_USERNAME/$IMAGE_NAME .'
     }
   }
 
