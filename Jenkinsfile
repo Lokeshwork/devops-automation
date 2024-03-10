@@ -19,7 +19,7 @@ stages {
 
   stage('build') {	agent {label 'agent3'}
     steps {
-      sh 'docker build -t $DOCKER_USERNAME/$IMAGE_NAME .'
+      sh 'docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .'
     }
   }
 
@@ -32,7 +32,6 @@ stage('Login to Dockerhub') {	agent {label 'agent3'}
 
   stage('Pushing Image to dockerhub') {	agent {label 'agent3'}
     steps {
-      sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}'
       sh 'docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}'
       sh 'docker logout'
     }
